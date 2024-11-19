@@ -4,12 +4,15 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateRealEstateDto } from './dto/create-real-estate.dto';
 import { RealEstate } from './entities/real-estate.entity';
+import { Sale } from 'src/sales/entities/sale.entity';
 
 @Injectable()
 export class RealEstateService {
   constructor(
     @InjectRepository(RealEstate)
     private realEstateRepository: Repository<RealEstate>,
+    @InjectRepository(Sale)
+    private salesRepository: Repository<Sale>,
   ) {}
 
   findAll(): Promise<RealEstate[]> {
@@ -29,6 +32,7 @@ export class RealEstateService {
   }
 
   async remove(id: number): Promise<void> {
+    await this.salesRepository.delete(id);
     await this.realEstateRepository.delete(id);
   }
 }

@@ -11,11 +11,10 @@ export class Sale {
   @ManyToOne(() => User, (user) => user.sales)
   user: User;
 
-  @ManyToOne(() => RealEstate)
+  @ManyToOne(() => RealEstate, (realEstate) => realEstate, { onDelete: 'CASCADE' })
   realEstate: RealEstate;
 
   @Column()
   saleDate: Date;
 
-  // Дополнительные поля по необходимости
 }
