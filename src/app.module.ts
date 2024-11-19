@@ -11,6 +11,7 @@ import { User } from './users/entities/user.entity';
 import { RealEstate } from './real-estate/entities/real-estate.entity';
 import { Series } from './real-estate/entities/series.entity';
 import { Sale } from './sales/entities/sale.entity';
+import { UploadModule } from './upload/upload.module';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { Sale } from './sales/entities/sale.entity';
     RealEstateModule,
     SeriesModule,
     SalesModule,
+    UploadModule,
   ],
   controllers: [AppController],
   providers: [AppService],
