@@ -1,4 +1,4 @@
-import { PrimaryGeneratedColumn, Column, OneToMany, Entity } from 'typeorm';
+import { PrimaryGeneratedColumn, Column, OneToMany, Entity, UpdateDateColumn, CreateDateColumn } from 'typeorm';
 import { Role } from '../enum/role.enum';
 import { Sale } from 'src/sales/entities/sale.entity';
 import { RealEstate } from 'src/real-estate/entities/real-estate.entity';
@@ -7,6 +7,13 @@ import { RealEstate } from 'src/real-estate/entities/real-estate.entity';
 export class User {
   @PrimaryGeneratedColumn()
   id: number;
+
+  @CreateDateColumn()
+  created_at: Date;
+
+
+  @UpdateDateColumn()
+  updated_at: Date;
 
   @Column({ unique: true })
   username: string;

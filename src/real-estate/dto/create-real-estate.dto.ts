@@ -5,9 +5,21 @@ import {
   IsOptional,
   IsBoolean,
   IsArray,
+  IsNotEmpty,
 } from 'class-validator';
+import { Column } from 'typeorm';
 
 export class CreateRealEstateDto {
+  // ()
+
+  imagePath?: string;
+
+  @IsOptional()
+  @IsString()
+  imageBase64?: string;
+
+
+
   @IsNumber()
   seriesId: number;
 
@@ -36,7 +48,8 @@ export class CreateRealEstateDto {
   district?: string;
 
   @IsString()
-  exactAddress: string;
+  @IsNotEmpty()
+  exactAddress?: string;
 
   @IsNumber()
   numberOfRooms: number;
@@ -67,6 +80,8 @@ export class CreateRealEstateDto {
 
   @IsNumber()
   priceHidden: number;
+
+  
 
   @IsOptional()
   @IsArray()

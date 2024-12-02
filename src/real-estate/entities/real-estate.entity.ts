@@ -5,6 +5,8 @@ import {
   Column,
   ManyToOne,
   JoinColumn,
+  CreateDateColumn,
+  UpdateDateColumn,
 } from 'typeorm';
 import { User } from 'src/users/entities/user.entity';
 import { Series } from './series.entity';
@@ -13,6 +15,13 @@ import { Series } from './series.entity';
 export class RealEstate {
   @PrimaryGeneratedColumn()
   id: number;
+
+  @CreateDateColumn()
+  created_at: Date;
+
+
+  @UpdateDateColumn()
+  updated_at: Date;
 
   @ManyToOne(() => Series, (series) => series.realEstates)
   series: Series;
@@ -43,7 +52,7 @@ export class RealEstate {
 
   @Column()
   totalArea: number;
-
+  
   @Column()
   floor: number;
 

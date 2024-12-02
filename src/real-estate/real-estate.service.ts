@@ -1,5 +1,5 @@
 // src/real-estate/real-estate.service.ts
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateRealEstateDto } from './dto/create-real-estate.dto';
@@ -26,13 +26,24 @@ export class RealEstateService {
     });
   }
 
-  create(createRealEstateDto: CreateRealEstateDto): Promise<RealEstate> {
+  async create(createRealEstateDto: CreateRealEstateDto): Promise<{ message: string; data: RealEstate }> {
     const realEstate = this.realEstateRepository.create(createRealEstateDto);
-    return this.realEstateRepository.save(realEstate);
+    const savedRealEstate = await this.realEstateRepository.save(realEstate);
+    return { message: 'Недвижимость успешно создана.', data: savedRealEstate };
   }
 
-  async remove(id: number): Promise<void> {
+
+
+  async remove(id: number): Promise<{ message: string }> {
+    const realEstate = await this.realEstateRepository.findOne({ where: { id } });
+
+    if (!realEstate) {
+      throw new NotFoundException(`Недвижимость с ID ${id} не найдена.`);
+    }
+
     await this.salesRepository.delete(id);
     await this.realEstateRepository.delete(id);
+
+    return { message: `Недвижимость с ID ${id} успешно удалена.` };
   }
 }
