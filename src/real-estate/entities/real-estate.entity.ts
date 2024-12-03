@@ -10,6 +10,11 @@ import {
 } from 'typeorm';
 import { User } from 'src/users/entities/user.entity';
 import { Series } from './series.entity';
+import { Repair } from 'src/repair/entities/repair.entity';
+import { Room } from 'src/rooms/entities/room.entity';
+import { Heating } from 'src/heating/entities/heating.entity';
+import { Furniture } from 'src/furniture/entities/furniture.entity';
+import { Documentation } from 'src/documentation/entities/documentation.entity';
 
 @Entity()
 export class RealEstate {
@@ -57,21 +62,21 @@ export class RealEstate {
   floor: number;
 
   @Column({ nullable: true })
-  documentation: string;
+  documentationName: string;
 
-  @Column()
-  heating: string;
+  // @Column()
+  // heatingName: string;
 
   @Column('text', { nullable: true })
   description: string;
 
   @Column({ nullable: true })
-  furniture: string;
+  furnitureName: string;
 
   @Column('decimal')
   priceVisible: number;
 
-  @Column('decimal')
+  @Column({ default: 0 })
   priceHidden: number;
 
   @Column('simple-array', { nullable: true })
@@ -80,4 +85,26 @@ export class RealEstate {
   @ManyToOne(() => User, (user) => user.realEstates, { nullable: true })
   @JoinColumn()
   user: User;
+
+  @ManyToOne(() => Repair, (repair) => repair.realEstates, { nullable: true, eager: true })
+  @JoinColumn()
+  repair: Repair;
+
+
+  @ManyToOne(() => Room, (room) => room.realEstates, {nullable: true, eager: true})
+  @JoinColumn()
+  room: Room
+
+  @ManyToOne(() => Heating, (heating) => heating.realEstates, {nullable: true, eager: true})
+  @JoinColumn()
+  heating: Heating
+
+  @ManyToOne(() => Furniture, (furniture) => furniture.realEstates, {nullable: true, eager: true})
+  @JoinColumn()
+  furniture: Furniture
+
+
+  @ManyToOne(() => Documentation, (documentation) => documentation.documentation, {nullable: true, eager: true})
+  @JoinColumn() 
+  documentation: Documentation
 }

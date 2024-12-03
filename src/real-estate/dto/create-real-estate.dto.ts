@@ -6,11 +6,36 @@ import {
   IsBoolean,
   IsArray,
   IsNotEmpty,
+  IsInt,
 } from 'class-validator';
 import { Column } from 'typeorm';
 
 export class CreateRealEstateDto {
   // ()
+
+  @IsOptional()
+  @IsInt()
+  repairId?: number;
+
+
+  @IsOptional()
+  @IsInt()
+  roomId?: number;
+
+
+  @IsOptional()
+  @IsInt()
+  furnitureId?: number;
+
+
+  @IsOptional()
+  @IsInt()
+  documentationId?: number;
+
+
+  @IsOptional()
+  @IsInt()
+  heatingId?: number;
 
   @IsOptional()
   @IsString()
@@ -64,10 +89,10 @@ export class CreateRealEstateDto {
 
   @IsOptional()
   @IsString()
-  documentation?: string;
+  documentationName?: string;
 
   @IsString()
-  heating: string;
+  heatingName: string;
 
   @IsOptional()
   @IsString()
@@ -75,7 +100,7 @@ export class CreateRealEstateDto {
 
   @IsOptional()
   @IsString()
-  furniture?: string;
+  furnitureName?: string;
 
   @IsNumber()
   priceVisible: number;

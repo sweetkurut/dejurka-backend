@@ -14,6 +14,15 @@ import { Sale } from './sales/entities/sale.entity';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { RepairModule } from './repair/repair.module';
+import { Repair } from './repair/entities/repair.entity';
+import { RoomsModule } from './rooms/rooms.module';
+import { DocumentationModule } from './documentation/documentation.module';
+import { HeatingModule } from './heating/heating.module';
+import { FurnitureModule } from './furniture/furniture.module';
+import { Room } from './rooms/entities/room.entity';
+import { Heating } from './heating/entities/heating.entity';
+import { Furniture } from './furniture/entities/furniture.entity';
+import { Documentation } from './documentation/entities/documentation.entity';
 
 @Module({
   imports: [
@@ -28,7 +37,7 @@ import { RepairModule } from './repair/repair.module';
       username: 'postgres',
       password: 'password',
       database: 'dejurka',
-      entities: [User, RealEstate, Series, Sale],
+      entities: [User, RealEstate, Series, Sale, Repair, Room, Heating, Furniture, Documentation],
       synchronize: true,
       autoLoadEntities: true,
     }),
@@ -38,6 +47,10 @@ import { RepairModule } from './repair/repair.module';
     SeriesModule,
     SalesModule,
     RepairModule,
+    RoomsModule,
+    DocumentationModule,
+    HeatingModule,
+    FurnitureModule,
   ],
   controllers: [AppController],
   providers: [AppService],

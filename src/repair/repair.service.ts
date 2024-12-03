@@ -1,26 +1,23 @@
+// src/repair/repair.service.ts
 import { Injectable } from '@nestjs/common';
 import { CreateRepairDto } from './dto/create-repair.dto';
-import { UpdateRepairDto } from './dto/update-repair.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repair } from './entities/repair.entity';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class RepairService {
-  create(createRepairDto: CreateRepairDto) {
-    return 'This action adds a new repair';
-  }
+  constructor(
+    @InjectRepository(Repair)
+    private repairRepository: Repository<Repair>,
+  ) {}
 
   findAll() {
-    return `This action returns all repair`;
+    return this.repairRepository.find();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} repair`;
-  }
-
-  update(id: number, updateRepairDto: UpdateRepairDto) {
-    return `This action updates a #${id} repair`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} repair`;
+  create(name: string) {
+    const repair = this.repairRepository.create({ name });
+    return this.repairRepository.save(repair);
   }
 }

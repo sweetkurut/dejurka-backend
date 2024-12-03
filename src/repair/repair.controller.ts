@@ -7,28 +7,13 @@ import { UpdateRepairDto } from './dto/update-repair.dto';
 export class RepairController {
   constructor(private readonly repairService: RepairService) {}
 
-  @Post()
-  create(@Body() createRepairDto: CreateRepairDto) {
-    return this.repairService.create(createRepairDto);
-  }
-
   @Get()
   findAll() {
     return this.repairService.findAll();
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.repairService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateRepairDto: UpdateRepairDto) {
-    return this.repairService.update(+id, updateRepairDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.repairService.remove(+id);
+  @Post()
+  create(@Body('name') name: string) {
+    return this.repairService.create(name);
   }
 }

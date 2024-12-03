@@ -2,13 +2,7 @@ import { RealEstate } from "src/real-estate/entities/real-estate.entity";
 import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 
 @Entity()
-export class Repair {
-
-  @PrimaryGeneratedColumn()
-  id: number;
-
-  @Column()
-  name: string;
+export class Heating {
 
   @CreateDateColumn()
   created_at: Date;
@@ -16,7 +10,13 @@ export class Repair {
   @UpdateDateColumn()
   updated_at: Date;
 
-  @OneToMany(() => RealEstate, (repair) => repair.repair)
+  @PrimaryGeneratedColumn()
+  id: number;
+
+  @Column()
+  name: string
+
+  @OneToMany(() => RealEstate, (heating) => heating.heating)
   realEstates: RealEstate[]
 
 }
