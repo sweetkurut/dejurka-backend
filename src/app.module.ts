@@ -13,6 +13,7 @@ import { Series } from './real-estate/entities/series.entity';
 import { Sale } from './sales/entities/sale.entity';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
+import { RepairModule } from './repair/repair.module';
 
 @Module({
   imports: [
@@ -36,6 +37,7 @@ import { join } from 'path';
     RealEstateModule,
     SeriesModule,
     SalesModule,
+    RepairModule,
   ],
   controllers: [AppController],
   providers: [AppService],
