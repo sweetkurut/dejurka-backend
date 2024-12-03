@@ -10,6 +10,7 @@ import {
   UseInterceptors,
   UploadedFile,
   BadRequestException,
+  UploadedFiles,
 } from '@nestjs/common';
 import { RealEstateService } from './real-estate.service';
 import { CreateRealEstateDto } from './dto/create-real-estate.dto';
@@ -17,7 +18,7 @@ import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { RolesGuard } from '../auth/roles.guard';
 import { Roles } from '../auth/roles.decorator';
 import { Role } from 'src/users/enum/role.enum';
-import { FileInterceptor } from '@nestjs/platform-express';
+import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 
 import { writeFile } from 'fs/promises';
 import { join } from 'path';
@@ -43,54 +44,41 @@ export class RealEstateController {
   }
 
   @Post()
-  @Roles(Role.Admin, Role.Manager)
-  @UseInterceptors(FileInterceptor('image')) // Для обработки файлов
-  async create(
-    @Body() createRealEstateDto: CreateRealEstateDto,
-    @UploadedFile() image?: Express.Multer.File,
-  ) {
-    // Если изображение передано как файл
-    if (image) {
+@Roles(Role.Admin, Role.Manager)
+@UseInterceptors(FilesInterceptor('image', 10)) // Для обработки нескольких файлов
+async create(
+  @Body() createRealEstateDto: CreateRealEstateDto,
+  @UploadedFiles() images?: Express.Multer.File[], // Получаем массив файлов
+) {
+  if (images && images.length > 0) {
+    const imagePaths = [];
+    const directoryPath = join(__dirname, '../../uploads/real-estate');
+    mkdirSync(directoryPath, { recursive: true });
+  
+    for (const image of images) {
       const filename = `${uuid.v4()}-${image.originalname}`;
-      const directoryPath = join(__dirname, '../../uploads/real-estate');
       const filePath = join(directoryPath, filename);
-
-      // Создаем директорию, если она не существует
-      mkdirSync(directoryPath, { recursive: true });
-
-      // Сохраняем файл на диск
       writeFileSync(filePath, image.buffer);
-
-      // Устанавливаем путь к изображению
-      createRealEstateDto.imagePath = `/uploads/real-estate/${filename}`;
+  
+      // Добавляем путь к изображению
+      imagePaths.push(`/uploads/real-estate/${filename}`);
     }
-
-    // Если изображение передано как Base64
-    if (createRealEstateDto.imageBase64) {
-      const fileBuffer = Buffer.from(createRealEstateDto.imageBase64, 'base64');
-      const filename = `${uuid.v4()}.jpg`;
-      const directoryPath = join(__dirname, '../../uploads/real-estate');
-      const filePath = join(directoryPath, filename);
-
-      // Создаем директорию, если она не существует
-      mkdirSync(directoryPath, { recursive: true });
-
-      // Сохраняем файл на диск
-      writeFileSync(filePath, fileBuffer);
-
-      // Устанавливаем путь к изображению
-      createRealEstateDto.imagePath = `/uploads/real-estate/${filename}`;
-      delete createRealEstateDto.imageBase64; // Удаляем Base64 из DTO
-    }
-
-    // Если ни файл, ни Base64 не переданы, бросаем ошибку
-    if (!createRealEstateDto.imagePath) {
-      throw new BadRequestException('Image is required (file or Base64)');
-    }
-
-    // Сохраняем данные
-    return this.realEstateService.create(createRealEstateDto);
+  
+    // Устанавливаем пути всех изображений
+    createRealEstateDto.photos = imagePaths;
+  } else {
+    throw new BadRequestException('No images uploaded');
   }
+  
+
+  if (!createRealEstateDto.photos || createRealEstateDto.photos.length === 0) {
+    throw new BadRequestException('Images are required');
+  }
+
+  // Сохраняем недвижимость
+  return this.realEstateService.create(createRealEstateDto);
+}
+
   // @Post('upload')
   // @UseInterceptors(FileInterceptor('file'))
   // uploadFile(@UploadedFile() file: Express.Multer.File) {

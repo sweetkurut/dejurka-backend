@@ -11,9 +11,15 @@ import { User } from './users/entities/user.entity';
 import { RealEstate } from './real-estate/entities/real-estate.entity';
 import { Series } from './real-estate/entities/series.entity';
 import { Sale } from './sales/entities/sale.entity';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
 
 @Module({
   imports: [
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', 'uploads'),
+      serveRoot: '/uploads',
+    }),
     TypeOrmModule.forRoot({
       type: 'postgres',
       host: 'localhost',

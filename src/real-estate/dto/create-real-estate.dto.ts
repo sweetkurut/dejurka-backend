@@ -12,11 +12,13 @@ import { Column } from 'typeorm';
 export class CreateRealEstateDto {
   // ()
 
-  imagePath?: string;
+  @IsOptional()
+  @IsString()
+  imageBase64?: string; // Для передачи изображения в формате Base64
 
   @IsOptional()
   @IsString()
-  imageBase64?: string;
+  imagePath?: string; 
 
 
 
@@ -85,5 +87,6 @@ export class CreateRealEstateDto {
 
   @IsOptional()
   @IsArray()
-  photos?: string[];
+  @IsString({ each: true })
+  photos: string[]; // Для хранения путей изображений
 }
