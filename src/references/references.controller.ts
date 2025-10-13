@@ -1,0 +1,51 @@
+import {
+  Controller,
+  Get,
+  Post,
+  Patch,
+  Delete,
+  Param,
+  Body,
+  UseGuards,
+} from '@nestjs/common';
+import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
+import { ReferencesService } from './references.service';
+import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
+import { RolesGuard } from '../common/guards/roles.guard';
+import { Roles } from '../common/decorators/roles.decorator';
+
+@ApiTags('References')
+@ApiBearerAuth()
+@UseGuards(JwtAuthGuard, RolesGuard)
+@Controller('references')
+export class ReferencesController {
+  constructor(private readonly refService: ReferencesService) {}
+
+  @Roles('admin')
+  @Get(':type')
+  findAll(@Param('type') type: string) {
+    return this.refService.findAll(type);
+  }
+
+  @Roles('admin')
+  @Post(':type')
+  create(@Param('type') type: string, @Body() body: any) {
+    return this.refService.create(type, body);
+  }
+
+  @Roles('admin')
+  @Patch(':type/:id')
+  update(
+    @Param('type') type: string,
+    @Param('id') id: string,
+    @Body() body: any,
+  ) {
+    return this.refService.update(type, id, body);
+  }
+
+  @Roles('admin')
+  @Delete(':type/:id')
+  remove(@Param('type') type: string, @Param('id') id: string) {
+    return this.refService.remove(type, id);
+  }
+}
