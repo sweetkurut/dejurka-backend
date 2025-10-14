@@ -1,3 +1,5 @@
+import { District, DocumentEntity, FurnitureType, HeatingType, RenovationType, RoomCount, Series } from 'src/references/entities';
+import { User } from 'src/users/entities/user.entity';
 import {
   Entity,
   PrimaryGeneratedColumn,
@@ -8,14 +10,6 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { User } from '../../users/entities/user.entity';
-import { Series } from '../../references/entities/series.entity';
-import { RenovationType } from '../../references/entities/renovation-type.entity';
-import { District } from '../../references/entities/district.entity';
-import { RoomCount } from '../../references/entities/room-count.entity';
-import { DocumentEntity } from '../../references/entities/document.entity';
-import { HeatingType } from '../../references/entities/heating-type.entity';
-import { FurnitureType } from '../../references/entities/furniture-type.entity';
 
 export enum CornerType {
   CORNER = 'угловая',

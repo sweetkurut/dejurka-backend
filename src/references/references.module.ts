@@ -3,13 +3,13 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ReferencesService } from './references.service';
 import { ReferencesController } from './references.controller';
 import {
-  Series,
-  RenovationType,
   District,
-  RoomCount,
   DocumentEntity,
-  HeatingType,
   FurnitureType,
+  HeatingType,
+  RenovationType,
+  RoomCount,
+  Series,
 } from './entities';
 
 @Module({

@@ -13,6 +13,7 @@ import { PropertiesService } from './properties.service';
 import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
 import { RolesGuard } from '../common/guards/roles.guard';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { CreatePropertyDto } from './dto/create-property.dto';
 
 @ApiTags('Properties')
 @ApiBearerAuth()
@@ -32,7 +33,7 @@ export class PropertiesController {
   }
 
   @Post()
-  create(@Body() body: any, @Req() req) {
+  create(@Body() body: CreatePropertyDto, @Req() req) {
     return this.propService.create(body, req.user);
   }
 
