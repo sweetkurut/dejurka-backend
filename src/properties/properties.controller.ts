@@ -38,7 +38,7 @@ export class PropertiesController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() body: any, @Req() req) {
+  update(@Param('id') id: string, @Body() body: CreatePropertyDto, @Req() req) {
     return this.propService.update(id, body, req.user);
   }
 
