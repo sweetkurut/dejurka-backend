@@ -6,5 +6,5 @@ export class RoomCount {
   id: string;
 
   @Column()
-  count: number;
+  name: number;
 }

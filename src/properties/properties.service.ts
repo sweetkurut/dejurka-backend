@@ -42,11 +42,20 @@ export class PropertiesService {
     private readonly docRepo: Repository<DocumentEntity>,
   ) {}
 
+  // async findAll(user: User) {
+  //   if (user.role === 'admin') {
+  //     return this.propertyRepo.find();
+  //   }
+  //   return this.propertyRepo.find({ where: { created_by: { id: user.id } } });
+  // }
+
   async findAll(user: User) {
-    if (user.role === 'admin') {
-      return this.propertyRepo.find();
-    }
-    return this.propertyRepo.find({ where: { created_by: { id: user.id } } });
+    const query =
+      user.role === 'admin' ? {} : { where: { created_by: { id: user.id } } };
+
+    const [properties, total] = await this.propertyRepo.findAndCount(query);
+
+    return { apartments: properties, total };
   }
 
   async findOne(id: string) {

@@ -40,4 +40,12 @@ export class UsersService {
     const user = await this.findOne(id);
     return this.userRepo.remove(user);
   }
+
+  async toggleStatus(id: string) {
+    const user = await this.userRepo.findOne({ where: { id } });
+    if (!user) throw new NotFoundException('Пользователь не найден');
+
+    user.isActive = !user.isActive;
+    return await this.userRepo.save(user);
+  }
 }
