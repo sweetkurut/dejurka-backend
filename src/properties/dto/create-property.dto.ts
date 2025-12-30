@@ -6,24 +6,65 @@ import {
   IsUUID,
   IsArray,
 } from 'class-validator';
+import { Type } from 'class-transformer';
 import { CornerType } from '../entities/property.entity';
 
 export class CreatePropertyDto {
-  @IsUUID() seriesId: string;
-  @IsUUID() districtId: string;
-  @IsUUID() renovationTypeId: string;
-  @IsString() floor_type: string;
-  @IsUUID() roomsCountId: string;
-  @IsNumber() area_total: number;
-  @IsEnum(CornerType) @IsOptional() corner_type?: CornerType;
-  @IsArray() @IsOptional() documentsIds?: string[];
-  @IsUUID() heatingTypeId: string;
-  @IsUUID() furnitureId: string;
-  @IsString() address: string;
-  @IsString() @IsOptional() description?: string;
-  @IsNumber() price_visible: number;
-  @IsNumber() price_hidden: number;
-  @IsArray() @IsOptional() photos?: string[];
-  @IsString() @IsOptional() construction_company?: string;
-  @IsString() @IsOptional() housing_complex?: string;
+  @IsUUID()
+  seriesId: string;
+
+  @IsUUID()
+  districtId: string;
+
+  @IsUUID()
+  renovationTypeId: string;
+
+  @IsUUID()
+  roomsCountId: string;
+
+  @IsUUID()
+  heatingTypeId: string;
+
+  // ⬅️ НЕОБЯЗАТЕЛЬНО
+  @IsOptional()
+  @IsUUID()
+  furnitureId?: string;
+
+  @IsOptional()
+  @IsArray()
+  @IsUUID('all', { each: true })
+  documentsIds?: string[];
+
+  @Type(() => Number)
+  @IsNumber()
+  area_total: number;
+
+  @IsString()
+  floor_type: string;
+
+  @IsOptional()
+  @IsEnum(CornerType)
+  corner_type?: CornerType;
+
+  @IsString()
+  address: string;
+
+  @IsOptional()
+  @IsString()
+  description?: string;
+
+  @Type(() => Number)
+  @IsNumber()
+  price_visible: number;
+
+  // ⬅️ admin only
+  @IsOptional()
+  @Type(() => Number)
+  @IsNumber()
+  price_hidden?: number;
+
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  photos?: string[];
 }

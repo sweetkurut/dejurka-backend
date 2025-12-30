@@ -1,4 +1,12 @@
-import { District, DocumentEntity, FurnitureType, HeatingType, RenovationType, RoomCount, Series } from 'src/references/entities';
+import {
+  District,
+  DocumentEntity,
+  FurnitureType,
+  HeatingType,
+  RenovationType,
+  RoomCount,
+  Series,
+} from 'src/references/entities';
 import { User } from 'src/users/entities/user.entity';
 import {
   Entity,
@@ -52,7 +60,10 @@ export class Property {
   @ManyToOne(() => HeatingType, { eager: true })
   heating_type: HeatingType;
 
-  @ManyToOne(() => FurnitureType, { eager: true })
+  // @ManyToOne(() => FurnitureType, { eager: true })
+  // furniture: FurnitureType;
+
+  @ManyToOne(() => FurnitureType, { eager: true, nullable: true })
   furniture: FurnitureType;
 
   @Column()
@@ -64,7 +75,7 @@ export class Property {
   @Column('float')
   price_visible: number;
 
-  @Column('float')
+  @Column('float', { nullable: true })
   price_hidden: number;
 
   @Column('simple-array', { nullable: true })

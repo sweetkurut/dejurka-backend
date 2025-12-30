@@ -21,18 +21,21 @@ import { Roles } from '../common/decorators/roles.decorator';
 export class ReferencesController {
   constructor(private readonly refService: ReferencesService) {}
 
-  @Roles('admin')
+  // ✅ ЧТЕНИЕ — admin + agent
+  @Roles('admin', 'agent')
   @Get(':type')
   findAll(@Param('type') type: string) {
     return this.refService.findAll(type);
   }
 
+  // ❌ СОЗДАНИЕ — ТОЛЬКО admin
   @Roles('admin')
   @Post(':type')
   create(@Param('type') type: string, @Body() body: any) {
     return this.refService.create(type, body);
   }
 
+  // ❌ ОБНОВЛЕНИЕ — ТОЛЬКО admin
   @Roles('admin')
   @Patch(':type/:id')
   update(
@@ -43,6 +46,7 @@ export class ReferencesController {
     return this.refService.update(type, id, body);
   }
 
+  // ❌ УДАЛЕНИЕ — ТОЛЬКО admin
   @Roles('admin')
   @Delete(':type/:id')
   remove(@Param('type') type: string, @Param('id') id: string) {
