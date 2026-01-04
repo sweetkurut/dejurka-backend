@@ -93,7 +93,22 @@ export class PropertiesService {
       : [];
 
     const property = this.propertyRepo.create({
-      created_by: user,
+      // created_by: user,
+      // series,
+      // district,
+      // renovation_type: renovation,
+      // rooms_count: roomCount,
+      // heating_type: heating,
+      // furniture,
+      // documents,
+      // floor_type: dto.floor_type,
+      // area_total: dto.area_total,
+      // corner_type: dto.corner_type,
+      // address: dto.address,
+      // description: dto.description,
+      // price_visible: dto.price_visible,
+      // price_hidden: dto.price_hidden,
+      // photos: dto.photos,
       series,
       district,
       renovation_type: renovation,
@@ -109,7 +124,9 @@ export class PropertiesService {
       price_visible: dto.price_visible,
       price_hidden: dto.price_hidden,
       photos: dto.photos,
+      created_by: user,
     });
+    property.created_by = user;
 
     return await this.propertyRepo.save(property);
   }
@@ -129,5 +146,23 @@ export class PropertiesService {
       throw new NotFoundException('Нет доступа для удаления');
     }
     return this.propertyRepo.remove(property);
+  }
+
+  async addPhotos(id: string, photos: string[], user: User) {
+    const property = await this.propertyRepo.findOne({
+      where: { id },
+      relations: { created_by: true },
+    });
+
+    if (!property) {
+      throw new NotFoundException('Объект не найден');
+    }
+
+    if (property.created_by.id !== user.id && user.role !== 'admin') {
+      throw new NotFoundException('Нет доступа');
+    }
+
+    property.photos = [...(property.photos || []), ...photos];
+    return this.propertyRepo.save(property);
   }
 }
