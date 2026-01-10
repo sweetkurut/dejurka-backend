@@ -15,11 +15,19 @@ import {
   FurnitureType,
   DocumentEntity,
 } from '../references/entities';
+import { PropertyObject } from './entities/property-object.entity';
+import { House } from './entities/house.entity';
+import { Land } from './entities/land.entity';
+import { Commercial } from './entities/commercial.entity';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([
       Property,
+      PropertyObject,
+      House,
+      Land,
+      Commercial,
       Series,
       District,
       RenovationType,

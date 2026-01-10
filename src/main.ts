@@ -15,8 +15,10 @@ async function bootstrap() {
   app.useGlobalFilters(new AllExceptionsFilter());
 
   app.enableCors({
-    origin: '*',
+    origin: 'http://localhost:5173', // 👈 фронт
     credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
   });
 
   // ✅ ВАЖНО: отдача статических файлов
@@ -36,7 +38,7 @@ async function bootstrap() {
 
   await app.listen(process.env.PORT || 3000);
   console.log(
-    `🚀 Server running on http://localhost:${process.env.PORT || 3000}`,
+    `🚀 Server running on http://localhost:${process.env.POSTGRES_PORT || 3000}`,
   );
 }
 
