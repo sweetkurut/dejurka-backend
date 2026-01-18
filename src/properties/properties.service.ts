@@ -112,6 +112,9 @@ export class PropertiesService {
       price_visible: dto.price_visible,
       price_hidden: dto.price_hidden,
       photos: dto.photos,
+      owner_phone: dto.owner_phone,
+      building_company: dto.building_company,
+      residential_complex: dto.residential_complex,
       created_by: user,
     });
     return await this.propertyRepo.save(property);
@@ -228,20 +231,24 @@ export class PropertiesService {
     return house;
   }
 
+  // updateHouse
   async updateHouse(id: string, dto: UpdateHouseDto, user: User) {
     const house = await this.houseRepo.findOne({
       where: { property: { id } },
-      relations: { property: true },
+      relations: { property: { district: true, document_type: true } },
     });
-    if (!house) {
-      throw new NotFoundException('Дом не найден');
-    }
+
+    if (!house) throw new NotFoundException('Дом не найден');
+
     if (house.property.created_by.id !== user.id && user.role !== 'admin') {
       throw new NotFoundException('Нет доступа');
     }
+
     if (dto.price_hidden && user.role !== 'admin') {
       throw new NotFoundException('Нет доступа к скрытой цене');
     }
+
+    // Обновляем базовые поля
     Object.assign(house.property, {
       title: dto.title ?? house.property.title,
       description: dto.description ?? house.property.description,
@@ -249,13 +256,32 @@ export class PropertiesService {
       price_hidden: dto.price_hidden ?? house.property.price_hidden,
       owner_phone: dto.owner_phone ?? house.property.owner_phone,
     });
+
+    // Обновляем связи (если пришли новые ID)
+    if (dto.districtId !== undefined) {
+      const newDistrict = await this.districtRepo.findOneBy({
+        id: dto.districtId,
+      });
+      if (!newDistrict) throw new NotFoundException('Район не найден');
+      house.property.district = newDistrict;
+    }
+
+    if (dto.documentTypeId !== undefined) {
+      const newDoc = await this.docRepo.findOneBy({ id: dto.documentTypeId });
+      if (!newDoc) throw new NotFoundException('Тип документа не найден');
+      house.property.document_type = newDoc;
+    }
+
+    // Специфические поля дома
     Object.assign(house, {
       house_area: dto.house_area ?? house.house_area,
       land_area: dto.land_area ?? house.land_area,
       communications: dto.communications ?? house.communications,
     });
+
     await this.propertyObjectRepo.save(house.property);
     await this.houseRepo.save(house);
+
     return this.findHouseById(id, user);
   }
 
@@ -376,17 +402,19 @@ export class PropertiesService {
   async updateLand(id: string, dto: UpdateLandDto, user: User) {
     const land = await this.landRepo.findOne({
       where: { property: { id } },
-      relations: { property: true },
+      relations: { property: { district: true, document_type: true } },
     });
-    if (!land) {
-      throw new NotFoundException('Участок не найден');
-    }
+
+    if (!land) throw new NotFoundException('Участок не найден');
+
     if (land.property.created_by.id !== user.id && user.role !== 'admin') {
       throw new NotFoundException('Нет доступа');
     }
+
     if (dto.price_hidden && user.role !== 'admin') {
       throw new NotFoundException('Нет доступа к скрытой цене');
     }
+
     Object.assign(land.property, {
       title: dto.title ?? land.property.title,
       description: dto.description ?? land.property.description,
@@ -394,12 +422,30 @@ export class PropertiesService {
       price_hidden: dto.price_hidden ?? land.property.price_hidden,
       owner_phone: dto.owner_phone ?? land.property.owner_phone,
     });
+
+    // Связи
+    if (dto.districtId !== undefined) {
+      const newDistrict = await this.districtRepo.findOneBy({
+        id: dto.districtId,
+      });
+      if (!newDistrict) throw new NotFoundException('Район не найден');
+      land.property.district = newDistrict;
+    }
+
+    if (dto.documentTypeId !== undefined) {
+      const newDoc = await this.docRepo.findOneBy({ id: dto.documentTypeId });
+      if (!newDoc) throw new NotFoundException('Тип документа не найден');
+      land.property.document_type = newDoc;
+    }
+
     Object.assign(land, {
       land_area: dto.land_area ?? land.land_area,
       communications: dto.communications ?? land.communications,
     });
+
     await this.propertyObjectRepo.save(land.property);
     await this.landRepo.save(land);
+
     return this.findLandById(id, user);
   }
 
@@ -512,23 +558,27 @@ export class PropertiesService {
     return commercial;
   }
 
+  // updateCommercial (по аналогии)
   async updateCommercial(id: string, dto: UpdateCommercialDto, user: User) {
     const commercial = await this.commercialRepo.findOne({
       where: { property: { id } },
-      relations: { property: true },
+      relations: { property: { district: true, document_type: true } },
     });
-    if (!commercial) {
+
+    if (!commercial)
       throw new NotFoundException('Коммерческое помещение не найдено');
-    }
+
     if (
       commercial.property.created_by.id !== user.id &&
       user.role !== 'admin'
     ) {
       throw new NotFoundException('Нет доступа');
     }
+
     if (dto.price_hidden && user.role !== 'admin') {
       throw new NotFoundException('Нет доступа к скрытой цене');
     }
+
     Object.assign(commercial.property, {
       title: dto.title ?? commercial.property.title,
       description: dto.description ?? commercial.property.description,
@@ -536,13 +586,30 @@ export class PropertiesService {
       price_hidden: dto.price_hidden ?? commercial.property.price_hidden,
       owner_phone: dto.owner_phone ?? commercial.property.owner_phone,
     });
+
+    if (dto.districtId !== undefined) {
+      const newDistrict = await this.districtRepo.findOneBy({
+        id: dto.districtId,
+      });
+      if (!newDistrict) throw new NotFoundException('Район не найден');
+      commercial.property.district = newDistrict;
+    }
+
+    if (dto.documentTypeId !== undefined) {
+      const newDoc = await this.docRepo.findOneBy({ id: dto.documentTypeId });
+      if (!newDoc) throw new NotFoundException('Тип документа не найден');
+      commercial.property.document_type = newDoc;
+    }
+
     Object.assign(commercial, {
       total_area: dto.total_area ?? commercial.total_area,
       floors: dto.floors ?? commercial.floors,
       communications: dto.communications ?? commercial.communications,
     });
+
     await this.propertyObjectRepo.save(commercial.property);
     await this.commercialRepo.save(commercial);
+
     return this.findCommercialById(id, user);
   }
 

@@ -86,4 +86,13 @@ export class Property {
 
   @UpdateDateColumn()
   updated_at: Date;
+
+  @Column({ nullable: true })
+  owner_phone: string; // ← добавляем номер хозяина
+
+  @Column({ nullable: true })
+  building_company?: string; // ← для элитки
+
+  @Column({ nullable: true })
+  residential_complex?: string;
 }

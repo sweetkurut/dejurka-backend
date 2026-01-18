@@ -67,4 +67,16 @@ export class CreatePropertyDto {
   @IsArray()
   @IsString({ each: true })
   photos?: string[];
+
+  @IsString()
+  @IsOptional()
+  owner_phone?: string;
+
+  @IsString()
+  @IsOptional()
+  building_company?: string;
+
+  @IsString()
+  @IsOptional()
+  residential_complex?: string;
 }
