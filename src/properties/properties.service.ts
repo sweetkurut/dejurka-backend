@@ -120,13 +120,123 @@ export class PropertiesService {
     return await this.propertyRepo.save(property);
   }
 
-  async update(id: string, data: Partial<Property>, user: User) {
-    const property = await this.findOne(id);
+  async update(id: string, dto: Partial<CreatePropertyDto>, user: User) {
+    // Находим объект со всеми нужными связями
+    const property = await this.propertyRepo.findOne({
+      where: { id },
+      relations: [
+        'series',
+        'district',
+        'renovation_type',
+        'rooms_count',
+        'heating_type',
+        'furniture',
+        'documents',
+      ],
+    });
+
+    if (!property) {
+      throw new NotFoundException('Объект не найден');
+    }
+
+    // Проверка доступа
     if (property.created_by.id !== user.id && user.role !== 'admin') {
       throw new NotFoundException('Нет доступа для редактирования');
     }
-    Object.assign(property, data);
-    return this.propertyRepo.save(property);
+
+    // Обновляем простые (скалярные) поля
+    Object.assign(property, {
+      address: dto.address ?? property.address,
+      description: dto.description ?? property.description,
+      area_total: dto.area_total ?? property.area_total,
+      floor_type: dto.floor_type ?? property.floor_type,
+      corner_type: dto.corner_type ?? property.corner_type,
+      owner_phone: dto.owner_phone ?? property.owner_phone,
+      price_visible: dto.price_visible ?? property.price_visible,
+      price_hidden: dto.price_hidden ?? property.price_hidden,
+      building_company: dto.building_company ?? property.building_company,
+      residential_complex:
+        dto.residential_complex ?? property.residential_complex,
+      photos: dto.photos ?? property.photos, // если приходят новые фото
+    });
+
+    // Обновляем связи (самое важное!)
+    if (dto.seriesId !== undefined) {
+      const newSeries = await this.seriesRepo.findOneBy({ id: dto.seriesId });
+      if (!newSeries) throw new NotFoundException('Серия не найдена');
+      property.series = newSeries;
+    }
+
+    if (dto.districtId !== undefined) {
+      const newDistrict = await this.districtRepo.findOneBy({
+        id: dto.districtId,
+      });
+      if (!newDistrict) throw new NotFoundException('Район не найден');
+      property.district = newDistrict;
+    }
+
+    if (dto.renovationTypeId !== undefined) {
+      const newRenov = await this.renovationRepo.findOneBy({
+        id: dto.renovationTypeId,
+      });
+      if (!newRenov) throw new NotFoundException('Тип ремонта не найден');
+      property.renovation_type = newRenov;
+    }
+
+    if (dto.roomsCountId !== undefined) {
+      const newRooms = await this.roomRepo.findOneBy({ id: dto.roomsCountId });
+      if (!newRooms)
+        throw new NotFoundException('Количество комнат не найдено');
+      property.rooms_count = newRooms;
+    }
+
+    if (dto.heatingTypeId !== undefined) {
+      const newHeating = await this.heatingRepo.findOneBy({
+        id: dto.heatingTypeId,
+      });
+      if (!newHeating) throw new NotFoundException('Тип отопления не найден');
+      property.heating_type = newHeating;
+    }
+
+    if (dto.furnitureId !== undefined) {
+      if (dto.furnitureId) {
+        const newFurniture = await this.furnitureRepo.findOneBy({
+          id: dto.furnitureId,
+        });
+        if (!newFurniture) throw new NotFoundException('Мебель не найдена');
+        property.furniture = newFurniture;
+      } else {
+        property.furniture = null;
+      }
+    }
+
+    // Документы (ManyToMany)
+    if (dto.documentsIds !== undefined) {
+      if (dto.documentsIds.length > 0) {
+        const newDocs = await this.docRepo.findBy({ id: In(dto.documentsIds) });
+        property.documents = newDocs;
+      } else {
+        property.documents = []; // сняли все документы
+      }
+    }
+
+    // Сохраняем изменения
+    await this.propertyRepo.save(property);
+
+    // Возвращаем обновлённый объект (можно с relations)
+    return this.propertyRepo.findOne({
+      where: { id },
+      relations: [
+        'series',
+        'district',
+        'renovation_type',
+        'rooms_count',
+        'heating_type',
+        'furniture',
+        'documents',
+        'created_by',
+      ],
+    });
   }
 
   async remove(id: string, user: User) {

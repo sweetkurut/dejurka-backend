@@ -64,7 +64,7 @@ export class Property {
   // furniture: FurnitureType;
 
   @ManyToOne(() => FurnitureType, { eager: true, nullable: true })
-  furniture: FurnitureType;
+  furniture: FurnitureType | null;
 
   @Column()
   address: string;
